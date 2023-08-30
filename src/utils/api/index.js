@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://192.168.1.107:8080";
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export const postRegisterUser = async (data) => {
   return axios.post(`${BASE_URL}/api/register`, data).then((res) => res.data);
@@ -20,11 +20,11 @@ export const getLogoutUser = async () => {
 //   });
 // };
 
-// export const getAllLinks = async (token) => {
-//   return axios.get(`${BASE_URL}/api/link`, {
-//     headers: { Authorization: `Bearer ${token}` },
-//   });
-// };
+export const getAllLinks = async (token) => {
+  return axios.get(`${BASE_URL}/api/link`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
 
 // export const postNewLink = async (token, data) => {
 //   return axios.post(`${BASE_URL}/api/link`, data, {

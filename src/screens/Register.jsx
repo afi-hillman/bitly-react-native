@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useForm, Controller } from "react-hook-form";
 import { postRegisterUser } from "../utils/api";
+import { AuthContext } from "../context/AuthContext";
 
 const Register = ({ navigation }) => {
   const handleNavigation = (path) => {
@@ -16,7 +17,7 @@ const Register = ({ navigation }) => {
     formState: { errors },
   } = useForm();
   const [registerState, setRegisterState] = useState("pending");
-  const [jwtCookie, setJwtCookie] = useState("");
+  const { jwt, setJwt } = useContext(AuthContext);
   const onSubmit = async (data) => {
     try {
       setRegisterState("loading");
@@ -27,7 +28,8 @@ const Register = ({ navigation }) => {
       });
       console.log(newUser);
       setRegisterState("success");
-      setJwtCookie(newUser.jwt);
+      setJwt(newUser.jwt);
+      handleNavigation("Login");
     } catch (error) {
       setRegisterState("error");
       console.log(error);
@@ -118,6 +120,7 @@ const Register = ({ navigation }) => {
                 onBlur={onBlur}
                 onChangeText={(value) => onChange(value)}
                 value={value}
+                secureTextEntry={true}
                 error={errors?.password?.message}
               />
             )}
@@ -125,7 +128,7 @@ const Register = ({ navigation }) => {
             rules={{ required: "This is required" }}
           />
           <Button style={{ width: "100%" }} onPress={handleSubmit(onSubmit)}>
-            Register
+            {registerState === "loading" ? "Creating your account" : "Register"}
           </Button>
           <Button
             style={{

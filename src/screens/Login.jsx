@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { Text, View } from "react-native";
+import React, { useContext, useState } from "react";
+import { Image, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useForm, Controller } from "react-hook-form";
 import { postLoginUser } from "../utils/api";
+import { AuthContext } from "../context/AuthContext";
 
 const Login = ({ navigation }) => {
   const handleNavigation = (path) => {
@@ -16,7 +17,7 @@ const Login = ({ navigation }) => {
     formState: { errors },
   } = useForm();
   const [loginState, setLoginState] = useState("pending");
-  const [jwtCookie, setJwtCookie] = useState("");
+  const { jwt, setJwt } = useContext(AuthContext);
   const onSubmit = async (data) => {
     try {
       setLoginState("loading");
@@ -27,7 +28,8 @@ const Login = ({ navigation }) => {
       console.log(data);
       console.log(user.message);
       setLoginState("success");
-      setJwtCookie(user.jwt);
+      setJwt(user.jwt);
+      console.log(user.jwt);
     } catch (error) {
       setLoginState("error");
       console.log(error);
@@ -104,14 +106,14 @@ const Login = ({ navigation }) => {
                 onChangeText={(value) => onChange(value)}
                 value={value}
                 error={errors?.password?.message}
-                // secureTextEntry={true}
+                secureTextEntry={true}
               />
             )}
             name="password"
             rules={{ required: "This is required" }}
           />
           <Button style={{ width: "100%" }} onPress={handleSubmit(onSubmit)}>
-            Login
+            {loginState === "loading" ? "Logging in..." : "Login"}
           </Button>
           <Button
             style={{
@@ -124,6 +126,12 @@ const Login = ({ navigation }) => {
             Don't have an account?
           </Button>
         </View>
+        {loginState === "loading" && (
+          <Image
+            source={require("../../assets/loader.svg")}
+            style={{ width: 400, height: 400 }}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
